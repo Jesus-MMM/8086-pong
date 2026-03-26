@@ -153,6 +153,29 @@ MOV AL, 01h    ; Limpiar buffer y leer con eco
 INT 21h
 ```
 
+### 2Ch - Obtener Tiempo del Sistema
+Obtiene la hora actual del sistema.
+
+| Registro | Valor/Descripción |
+|----------|-------------------|
+| AH | 2Ch |
+| **Retorno** | |
+| CH | Hora (0-23) |
+| CL | Minutos (0-59) |
+| DH | Segundos (0-59) |
+| DL | Centésimas de segundo (0-99) |
+
+```assembly
+MOV AH, 2Ch
+INT 21h        ; CH=hora, CL=minutos, DH=segundos, DL=centésimas
+
+; Ejemplo: Guardar tiempo en variables
+MOV HORA, CH
+MOV MINUTOS, CL
+MOV SEGUNDOS, DH
+MOV CENTESIMAS, DL
+```
+
 ### 25h - Establecer Vector de Interrupción
 Establece el manejador de una interrupción.
 
@@ -212,6 +235,7 @@ INT 21h
 | 0Ah | Leer cadena | Lee línea de texto del teclado |
 | 0Bh | Verificar teclado | Verifica si hay carácter disponible |
 | 0Ch | Limpiar y leer | Limpia buffer y lee carácter |
+| 2Ch | Obtener tiempo | Obtiene hora del sistema |
 | 25h | Establecer vector | Establece manejador de interrupción |
 | 35h | Obtener vector | Obtiene manejador de interrupción |
 | 4Ch | Terminar programa | Termina programa y retorna al DOS |
