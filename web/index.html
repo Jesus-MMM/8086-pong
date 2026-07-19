@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PONG - 8086 DOS Game</title>
-    <link rel="stylesheet" href="https://js-dos.com/6.22/current/js-dos.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -50,13 +49,8 @@
 
         #jsdos-container {
             margin-top: 1rem;
-            width: 640px;
+            width: 960px;
             max-width: 100%;
-        }
-
-        #jsdos {
-            width: 100%;
-            aspect-ratio: 4 / 3;
         }
 
         #loading {
@@ -64,7 +58,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 480px;
+            height: 720px;
             color: #666;
             font-size: 0.9rem;
         }
@@ -82,6 +76,8 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        #loading.error { color: #c55; }
 
         footer {
             margin-top: 1.5rem;
@@ -122,7 +118,6 @@
             <div class="spinner"></div>
             Cargando DOSBox WebAssembly...
         </div>
-        <div id="jsdos" style="display:none;"></div>
     </div>
 
     <footer>
@@ -134,22 +129,35 @@
     <script>
         (function () {
             var loading = document.getElementById("loading");
-            var jsdos   = document.getElementById("jsdos");
 
-            Dos(jsdos, {
+            function showError(msg) {
+                console.error("[PONG]", msg);
+                loading.className = "error";
+                loading.innerHTML = msg;
+            }
+
+            if (typeof Dos === "undefined") {
+                showError("js-dos no se pudo cargar. Verifica tu conexion a internet.");
+                return;
+            }
+
+            var canvas = document.createElement("canvas");
+            document.getElementById("jsdos-container").appendChild(canvas);
+
+            Dos(canvas, {
                 wdosboxUrl: "https://js-dos.com/6.22/current/wdosbox.js",
-                // Scale to fit container
-                scaler: 2,
-                // Sensible defaults for a simple DOS game
-                cycles: 600,
+                cycles: "auto",
             }).ready(function (fs, main) {
+                console.log("[PONG] DOSBox listo, extrayendo pong.zip...");
                 fs.extract("pong.zip").then(function () {
+                    console.log("[PONG] ZIP extraido, ejecutando PONG.EXE");
                     loading.style.display = "none";
-                    jsdos.style.display   = "block";
                     main(["-c", "PONG.EXE"]);
                 }).catch(function (err) {
-                    loading.textContent = "Error al cargar el juego: " + err;
+                    showError("Error al extraer pong.zip: " + err);
                 });
+            }).catch(function (err) {
+                showError("Error al iniciar DOSBox: " + err);
             });
         })();
     </script>

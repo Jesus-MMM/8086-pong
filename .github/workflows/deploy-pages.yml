@@ -43,7 +43,7 @@ jobs:
         run: |
           mkdir -p _site
           cp web/index.html _site/
-          cp web/dist/pong.zip _site/
+          cp web/pong.zip _site/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

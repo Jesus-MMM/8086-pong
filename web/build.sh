@@ -12,8 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 EXE="${1:-$PROJECT_ROOT/PONG.EXE}"
-OUT_DIR="$SCRIPT_DIR/dist"
-OUT_ZIP="$OUT_DIR/pong.zip"
+OUT_ZIP="$SCRIPT_DIR/pong.zip"
 
 if [ ! -f "$EXE" ]; then
     echo "Error: PONG.EXE not found at $EXE" >&2
@@ -21,7 +20,6 @@ if [ ! -f "$EXE" ]; then
     exit 1
 fi
 
-mkdir -p "$OUT_DIR"
 rm -f "$OUT_ZIP"
 
 python3 - "$EXE" "$OUT_ZIP" <<'PYEOF'

@@ -6,4 +6,4 @@
 *.obj
 
 # Web build artifacts
-web/dist/
+web/pong.zip
