@@ -1,3 +1,9 @@
 *.exe
+*.EXE
+!PONG.EXE
 *.com
+*.COM
 *.obj
+
+# Web build artifacts
+web/dist/

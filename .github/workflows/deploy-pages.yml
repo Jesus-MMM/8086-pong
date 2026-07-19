@@ -1,0 +1,62 @@
+# Deploys the playable web preview to GitHub Pages
+# The page uses js-dos (DOSBox compiled to WebAssembly) to run PONG.EXE in-browser.
+name: Deploy Web Preview
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Locate PONG.EXE
+        run: |
+          if [ ! -f PONG.EXE ]; then
+            echo "::error::PONG.EXE not found in project root."
+            echo "::error::Build the game locally first and commit PONG.EXE."
+            echo "::error::  ml /AT /Zd pong.asm"
+            echo "::error::  link /TINY pong.obj"
+            exit 1
+          fi
+          echo "PONG.EXE found ($(wc -c < PONG.EXE) bytes)"
+
+      - name: Build web bundle
+        run: |
+          chmod +x web/build.sh
+          bash web/build.sh
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp web/index.html _site/
+          cp web/dist/pong.zip _site/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
